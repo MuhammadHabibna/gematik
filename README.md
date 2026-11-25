@@ -10,7 +10,7 @@
 - **Holdout Macro F1 Final**: `0,66867` (Kesalahan ekstrem `Menurun <-> Tumbuh` hanya 12 dari 1.400 UMKM / `0,86%`).
 
 ## Struktur Berkas
-- `web_implementasi_situmbuh/` : Aplikasi web operasional **SiTumbuh Lampung** (POV Penerapan Dinas Koperasi & UKM: Antrean Prioritas UMKM, Peta Kerentanan Wilayah, Rekomendasi Aksi Otomatis, Ekspor CSV Tugas Lapangan, dan Simulator Dampak Intervensi *What-If*).
+- `web_implementasi_situmbuh/` : Aplikasi web operasional **SiTumbuh Lampung** (Live: [situmbuh-lampung.vercel.app](https://situmbuh-lampung.vercel.app/)) - POV Penerapan Dinas Koperasi & UKM: Antrean Prioritas UMKM, Kajian Spasial Mediasi Blank-Spot, Segmentasi 3 Persona K-Means, Simulator Dampak Intervensi *What-If*, dan Skrining Batch Massal (CSV).
 - `Atas Nama.csv` : File submission resmi (1.400 baris Holdout).
 - `Atas_Nama_Notebook_Final.ipynb` : Notebook laporan lengkap terstruktur (BAB 1-7 + seluruh kode & analisis output).
 - `Atas_Nama_Pipeline_Final.py` : Pipeline reproduksibel 15 model lengkap.
