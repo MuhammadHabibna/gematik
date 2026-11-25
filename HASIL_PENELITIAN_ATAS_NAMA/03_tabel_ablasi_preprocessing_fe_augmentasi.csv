@@ -1,0 +1,14 @@
+Tahap_Eksperimen,Kategori,CV_Macro_F1,CV_LogLoss,Kesimpulan
+1. SVM-RBF Baseline,Model Klasifikasi Non-Linier,0.64787,0.73998,Kernel RBF over-smooth pada fitur campuran
+2. Generative Naive Bayes (Marginalizing NaN),Generative Classifier P(X|Y),0.63528,0.88865,Membuktikan data bukan dibangkitkan secara Naive Bayes Y->X
+3. Gaussian Copula Generative Classifier,Generative Classifier P(X|Y),0.62431,0.94578,Membuktikan arah kausal sejati adalah X -> Latent Score S -> Y
+4. LogReg + SMOTE Augmentation,Data Augmentation (Train Only),0.65476,0.73025,Merusak proporsi prior kelas Stabil (over-predict kelas ujung)
+"5. LightGBM Default (depth bebas, Raw)",Gradient Boosting Baseline,0.65705,0.7381,Tree dalam mengalami overfitting terhadap stochastic noise
+6. Logistic Regression (Raw + Median Impute),Linear Baseline,0.6617,0.71566,Sinyal dasar bersifat aditif & monotonik
+7. LogReg + Gaussian Noise Augmentation (3x),Data Augmentation (Train Only),0.66809,0.71191,Berfungsi positif sebagai regularisasi Tikhonov kontinu
+8. CatBoost + Gaussian Copula Synthetic Augmentation (2x),Generative Augmentation (Train Only),0.6716,0.71672,Sampel sintetis Copula kompetitif & memberi diversitas ensemble
+9. Outlier Cleaning (>P99->NaN) + MICE Imputation,Preprocessing & Imputasi,0.66898,0.71168,Menurunkan LogLoss drastis (-0.0040) dengan merekonstruksi Literasi Digital
+10. + Unsupervised Clustering FE (GMM K=5 & K-Means K=6),Feature Engineering,0.67044,0.71238,Probabilitas klaster & jarak centroid meningkatkan Macro F1 (+0.0015)
+11. + Rich Domain FE + GBDT-MICE Hybrid + Shallow CatBoost d3,Feature Engineering & Tuning,0.67442,0.71532,Pembatasan depth=3 + rasio ROI & Engagement mencegah overfit
+12. Single Ordinal Latent Regressor (Truncated-Normal Target),Ordinal Regression Discovery,0.67169,0.71466,"Sesuai mekanisme pembangkit data qcut(S, [0, 0.27, 0.70, 1.0])"
+13. CHAMPION: 15-Model Multi-Paradigm Blend (Nested Multiplier Opt),Final Meta-Ensemble,0.67369,0.70546,Skor tertinggi bebas leakage; Holdout Macro F1 = 0.66867

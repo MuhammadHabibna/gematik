@@ -1,0 +1,5 @@
+Kelas,Precision,Recall,F1_Score,Support
+Menurun,0.7003,0.6614,0.6803,378
+Stabil,0.6121,0.6395,0.6255,602
+Tumbuh,0.7053,0.6952,0.7002,420
+MACRO_AVERAGE,0.6726,0.6654,0.6687,1400

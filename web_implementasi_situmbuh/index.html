@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SiTumbuh Lampung - Sistem Prioritas Pendampingan UMKM Digital</title>
+  <style>
+    :root {
+      --bg: #F7EBE0;
+      --surface: #FFFDFC;
+      --surface-soft: #F3E5D8;
+      --navy: #05192D;
+      --indigo: #5038BC;
+      --indigo-light: #7058DE;
+      --gold: #FFD668;
+      --teal: #0D9488;
+      --amber: #D97706;
+      --red: #DC2626;
+      --slate: #475569;
+      --border: #E5D5C5;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--navy);
+      line-height: 1.5;
+    }
+    .topbar {
+      background: var(--navy);
+      color: #F2F1EB;
+      padding: 14px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 4px solid var(--indigo);
+    }
+    .brand { display: flex; align-items: center; gap: 14px; }
+    .brand-badge {
+      background: var(--indigo);
+      color: #FFF;
+      font-weight: 800;
+      font-size: 13px;
+      padding: 6px 12px;
+      border-radius: 8px;
+      letter-spacing: 0.6px;
+    }
+    .brand h1 { font-size: 19px; font-weight: 700; }
+    .brand p { font-size: 12px; color: #CBD5E1; }
+    .nav-tabs { display: flex; gap: 8px; }
+    .tab-btn {
+      background: rgba(255,255,255,0.08);
+      color: #E2E8F0;
+      border: 1px solid rgba(255,255,255,0.16);
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .tab-btn.active {
+      background: var(--gold);
+      color: var(--navy);
+      border-color: var(--gold);
+    }
+    .container { max-width: 1280px; margin: 22px auto; padding: 0 20px; }
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+    .kpi-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px 18px;
+      box-shadow: 0 4px 12px rgba(5, 25, 45, 0.05);
+      border-left: 6px solid var(--indigo);
+    }
+    .kpi-card.tier1 { border-left-color: var(--red); }
+    .kpi-card.tier2 { border-left-color: var(--amber); }
+    .kpi-card.tier3 { border-left-color: var(--teal); }
+    .kpi-val { font-size: 28px; font-weight: 800; color: var(--navy); }
+    .kpi-lbl { font-size: 12.5px; font-weight: 700; color: var(--slate); margin-top: 2px; }
+    .kpi-sub { font-size: 11.5px; color: #64748B; margin-top: 4px; }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(5, 25, 45, 0.05);
+      margin-bottom: 18px;
+    }
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    .panel-title { font-size: 16px; font-weight: 800; color: var(--navy); }
+    .panel-sub { font-size: 12px; color: var(--slate); }
+
+    .two-col { display: grid; grid-template-columns: 1.05fr 1.45fr; gap: 18px; }
+    .filters { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+    select, input[type="text"], input[type="number"] {
+      padding: 7px 11px;
+      border: 1px solid #CBD5E1;
+      border-radius: 8px;
+      font-size: 13px;
+      background: #FFF;
+      color: var(--navy);
+    }
+    .btn {
+      background: var(--indigo);
+      color: #FFF;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn:hover { background: #3E28A5; }
+    .btn-outline {
+      background: #FFF;
+      color: var(--indigo);
+      border: 1px solid var(--indigo);
+    }
+
+    .wilayah-list { display: flex; flex-direction: column; gap: 9px; max-height: 410px; overflow-y: auto; padding-right: 4px; }
+    .wilayah-row { background: #FAF6F2; border: 1px solid var(--border); border-radius: 10px; padding: 9px 12px; }
+    .wilayah-top { display: flex; justify-content: space-between; font-size: 12.5px; font-weight: 700; margin-bottom: 5px; }
+    .stacked-bar { height: 10px; border-radius: 99px; overflow: hidden; display: flex; background: #E2E8F0; }
+    .sb-m { background: var(--red); }
+    .sb-s { background: var(--amber); }
+    .sb-t { background: var(--teal); }
+    .wilayah-meta { font-size: 11px; color: var(--slate); margin-top: 4px; display: flex; justify-content: space-between; }
+
+    .table-wrap { overflow-x: auto; max-height: 410px; overflow-y: auto; border: 1px solid var(--border); border-radius: 10px; }
+    table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+    th {
+      position: sticky; top: 0;
+      background: var(--navy); color: #F2F1EB;
+      text-align: left; padding: 9px 10px; font-weight: 700;
+    }
+    td { padding: 8px 10px; border-bottom: 1px solid #EFE5DA; }
+    tr:hover td { background: #FAF3EB; }
+
+    .badge {
+      display: inline-block; padding: 3px 8px; border-radius: 99px;
+      font-size: 11px; font-weight: 700; white-space: nowrap;
+    }
+    .b-menurun { background: #FEE2E2; color: #991B1B; }
+    .b-stabil { background: #FEF3C7; color: #92400E; }
+    .b-tumbuh { background: #CCFBF1; color: #115E59; }
+    .action-tag {
+      background: #EDE9FE; color: #4C1D95;
+      padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 600;
+    }
+
+    .sim-grid { display: grid; grid-template-columns: 1.15fr 1fr; gap: 20px; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .field label { display: block; font-size: 12px; font-weight: 700; margin-bottom: 4px; color: var(--slate); }
+    .field input[type="range"] { width: 100%; accent-color: var(--indigo); }
+    .field select, .field input[type="number"] { width: 100%; }
+
+    .result-box {
+      background: var(--navy); color: #F2F1EB;
+      border-radius: 14px; padding: 20px;
+      margin-bottom: 14px;
+    }
+    .result-kicker { color: var(--gold); font-size: 11px; font-weight: 800; letter-spacing: 0.8px; text-transform: uppercase; }
+    .result-status { font-size: 26px; font-weight: 800; margin: 4px 0 8px; }
+    .prob-bars { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+    .pb-row { display: grid; grid-template-columns: 75px 1fr 48px; align-items: center; gap: 10px; font-size: 12px; font-weight: 600; }
+    .pb-track { background: rgba(255,255,255,0.14); height: 10px; border-radius: 99px; overflow: hidden; }
+    .pb-fill { height: 100%; border-radius: 99px; transition: width 0.25s; }
+
+    .whatif-box {
+      background: #F5F3FF; border: 1.5px solid #C4B5FD;
+      border-radius: 12px; padding: 16px;
+    }
+    .whatif-title { font-size: 14px; font-weight: 800; color: var(--indigo); margin-bottom: 8px; }
+    .toggle-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+    .toggle-item { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; cursor: pointer; }
+    .impact-pill {
+      background: #FFF; border: 1px solid #DDD6FE; border-radius: 10px; padding: 11px 13px;
+      font-size: 13px;
+    }
+    .hidden { display: none; }
+    .footer-note { text-align: center; font-size: 11.5px; color: var(--slate); padding: 14px 0 24px; }
+    @media (max-width: 960px) {
+      .kpi-grid, .two-col, .sim-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-badge">SiTumbuh LAMPUNG</div>
+      <div>
+        <h1>Sistem Pendukung Keputusan Prioritas Pendampingan UMKM Digital</h1>
+        <p>Implementasi Operasional Model Klasifikasi Tim Atas Nama untuk Dinas Koperasi &amp; UKM Provinsi Lampung</p>
+      </div>
+    </div>
+    <nav class="nav-tabs">
+      <button class="tab-btn active" onclick="switchTab('prioritas', this)">1. Antrean Prioritas &amp; Wilayah</button>
+      <button class="tab-btn" onclick="switchTab('simulasi', this)">2. Cek UMKM &amp; Simulasi Intervensi</button>
+    </nav>
+  </header>
+
+  <main class="container">
+    <!-- TAB 1: OPERATIONAL PRIORITIZATION -->
+    <section id="tab-prioritas">
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-val" id="kpi-total">1.400</div>
+          <div class="kpi-lbl">Total UMKM Terpetakan</div>
+          <div class="kpi-sub">Cohort Evaluasi Lapangan (Holdout)</div>
+        </div>
+        <div class="kpi-card tier1">
+          <div class="kpi-val" id="kpi-t1">0</div>
+          <div class="kpi-lbl">Tier 1: Penyelamatan Cepat</div>
+          <div class="kpi-sub">Prediksi Menurun - Wajib Intervensi Segera</div>
+        </div>
+        <div class="kpi-card tier2">
+          <div class="kpi-val" id="kpi-t2">0</div>
+          <div class="kpi-lbl">Tier 2: Akselerasi Naik Kelas</div>
+          <div class="kpi-sub">Prediksi Stabil - Optimasi Konten &amp; Ulasan</div>
+        </div>
+        <div class="kpi-card tier3">
+          <div class="kpi-val" id="kpi-t3">0</div>
+          <div class="kpi-lbl">Tier 3: Ekspansi &amp; Duta Mentor</div>
+          <div class="kpi-sub">Prediksi Tumbuh - Kandidat Mentor Sebaya</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <div>
+            <div class="panel-title">Filter Target Pendampingan Lapangan</div>
+            <div class="panel-sub">Saring daftar UMKM per kabupaten/kota, sektor, dan tingkat urgensi untuk penugasan pendamping</div>
+          </div>
+          <div class="filters">
+            <select id="f-kab" onchange="renderDashboard()">
+              <option value="ALL">Semua Kabupaten/Kota (15)</option>
+            </select>
+            <select id="f-sek" onchange="renderDashboard()">
+              <option value="ALL">Semua Sektor Usaha (6)</option>
+            </select>
+            <select id="f-tier" onchange="renderDashboard()">
+              <option value="ALL">Semua Tier Prioritas</option>
+              <option value="Menurun">Tier 1: Penyelamatan (Menurun)</option>
+              <option value="Stabil">Tier 2: Akselerasi (Stabil)</option>
+              <option value="Tumbuh">Tier 3: Ekspansi (Tumbuh)</option>
+            </select>
+            <input type="text" id="f-search" placeholder="Cari ID UMKM..." oninput="renderDashboard()" style="width:140px;" />
+            <button class="btn" onclick="exportFilteredCSV()">Ekspor Daftar Tugas (.csv)</button>
+          </div>
+        </div>
+
+        <div class="two-col">
+          <div>
+            <div style="font-size:13.5px;font-weight:800;margin-bottom:8px;">Peta Kerentanan &amp; Kebutuhan Intervensi per Wilayah</div>
+            <div class="wilayah-list" id="wilayah-container"></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+              <span style="font-size:13.5px;font-weight:800;">Daftar Prioritas UMKM &amp; Rekomendasi Aksi Otomatis</span>
+              <span id="table-count" style="font-size:12px;color:var(--slate);font-weight:600;"></span>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>ID UMKM</th>
+                    <th>Wilayah &amp; Sektor</th>
+                    <th>Literasi / Bayar</th>
+                    <th>Status &amp; Tier</th>
+                    <th>Rekomendasi Aksi Pendamping</th>
+                  </tr>
+                </thead>
+                <tbody id="umkm-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: LIVE ASSESSMENT & POLICY WHAT-IF SIMULATOR -->
+    <section id="tab-simulasi" class="hidden">
+      <div class="panel">
+        <div class="panel-header">
+          <div>
+            <div class="panel-title">Asesmen Mandiri UMKM &amp; Simulator Dampak Program Pendampingan</div>
+            <div class="panel-sub">Digunakan oleh pendamping lapangan untuk mengevaluasi UMKM baru dan mensimulasikan efektivitas intervensi sebelum anggaran dikucurkan</div>
+          </div>
+        </div>
+
+        <div class="sim-grid">
+          <div class="form-grid">
+            <div class="field">
+              <label>Kabupaten / Kota</label>
+              <select id="s-kab" onchange="runSimulation()">
+                <option>Mesuji</option><option>Tulang Bawang</option><option>Pesisir Barat</option>
+                <option>Lampung Selatan</option><option>Lampung Tengah</option><option>Lampung Timur</option>
+                <option>Lampung Utara</option><option>Pringsewu</option><option>Metro</option><option>Bandar Lampung</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Sektor Usaha</label>
+              <select id="s-sek" onchange="runSimulation()">
+                <option>Kuliner</option><option>Perdagangan Eceran</option><option>Pertanian Olahan</option>
+                <option>Fashion</option><option>Jasa</option><option>Kerajinan</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Skor Literasi Digital: <span id="lbl-lit" style="color:var(--indigo)">42</span> / 100</label>
+              <input type="range" id="s-lit" min="0" max="100" value="42" oninput="runSimulation()" />
+            </div>
+            <div class="field">
+              <label>Kualitas Internet</label>
+              <select id="s-inet" onchange="runSimulation()">
+                <option value="0">Rendah</option>
+                <option value="1" selected>Sedang</option>
+                <option value="2">Tinggi</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Metode Pembayaran Digital</label>
+              <select id="s-pay" onchange="runSimulation()">
+                <option value="0" selected>Tunai saja</option>
+                <option value="1">QRIS</option>
+                <option value="2">Multi-kanal</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Pernah Ikut Pelatihan Digital?</label>
+              <select id="s-pel" onchange="runSimulation()">
+                <option value="0" selected>Tidak</option>
+                <option value="1">Ya</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Jumlah Platform Digital Aktif: <span id="lbl-plat" style="color:var(--indigo)">1</span></label>
+              <input type="range" id="s-plat" min="0" max="5" value="1" oninput="runSimulation()" />
+            </div>
+            <div class="field">
+              <label>Frekuensi Posting / Minggu: <span id="lbl-post" style="color:var(--indigo)">2</span>x</label>
+              <input type="range" id="s-post" min="0" max="15" value="2" oninput="runSimulation()" />
+            </div>
+            <div class="field">
+              <label>Rating Pelanggan: <span id="lbl-rat" style="color:var(--indigo)">3.8</span> / 5.0</label>
+              <input type="range" id="s-rat" min="2.5" max="5.0" step="0.1" value="3.8" oninput="runSimulation()" />
+            </div>
+            <div class="field">
+              <label>Jumlah Ulasan Pelanggan</label>
+              <input type="number" id="s-ulasan" value="8" min="0" max="300" oninput="runSimulation()" />
+            </div>
+            <div class="field">
+              <label>Modal Awal (Juta Rp)</label>
+              <input type="number" id="s-mod" value="18" min="1" max="300" oninput="runSimulation()" />
+            </div>
+            <div class="field">
+              <label>Omzet Bulanan (Juta Rp)</label>
+              <input type="number" id="s-omz" value="10" min="1" max="100" oninput="runSimulation()" />
+            </div>
+          </div>
+
+          <div>
+            <div class="result-box">
+              <div class="result-kicker">Hasil Asesmen Model SiTumbuh</div>
+              <div class="result-status" id="sim-pred">Status: MENURUN</div>
+              <div id="sim-tier" style="font-size:13px;color:#CBD5E1;">Rekomendasi Paket: Tier 1 - Penyelamatan Cepat</div>
+              <div class="prob-bars">
+                <div class="pb-row"><span>Menurun</span><div class="pb-track"><div id="bar-m" class="pb-fill" style="background:var(--red);width:60%"></div></div><span id="pct-m">60%</span></div>
+                <div class="pb-row"><span>Stabil</span><div class="pb-track"><div id="bar-s" class="pb-fill" style="background:var(--amber);width:30%"></div></div><span id="pct-s">30%</span></div>
+                <div class="pb-row"><span>Tumbuh</span><div class="pb-track"><div id="bar-t" class="pb-fill" style="background:var(--teal);width:10%"></div></div><span id="pct-t">10%</span></div>
+              </div>
+              <div id="sim-aksi" style="margin-top:14px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.15);font-size:12.5px;color:var(--gold);font-weight:700;"></div>
+            </div>
+
+            <div class="whatif-box">
+              <div class="whatif-title">Simulasi Dampak Intervensi Pemda ("What-If Policy Simulator")</div>
+              <div class="toggle-list">
+                <label class="toggle-item"><input type="checkbox" id="w-pel" onchange="runSimulation()" checked /> Beri Pelatihan Digital (+Literasi +18 poin)</label>
+                <label class="toggle-item"><input type="checkbox" id="w-qris" onchange="runSimulation()" checked /> Fasilitasi Onboarding Pembayaran QRIS / Multi-kanal</label>
+                <label class="toggle-item"><input type="checkbox" id="w-inet" onchange="runSimulation()" /> Tingkatkan Akses Internet Komunal (+1 level) &amp; Konten (+3 post/mg)</label>
+              </div>
+              <div class="impact-pill" id="whatif-out"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer-note">
+      SiTumbuh Lampung v1.0 | Prototipe Penerapan Hasil Pemodelan Data Science Tim Atas Nama (GEMATIK VI 2026) | Berbasis Prediksi Holdout Resmi (n = 1.400 UMKM)
+    </footer>
+  </main>
+
+  <script src="app_data.js"></script>
+  <script>
+    // Populate dropdowns
+    const kabs = [...new Set(UMKM_RECORDS.map(r => r.kab))].sort();
+    const seks = [...new Set(UMKM_RECORDS.map(r => r.sek))].sort();
+    kabs.forEach(k => document.getElementById("f-kab").innerHTML += `<option value="${k}">${k}</option>`);
+    seks.forEach(s => document.getElementById("f-sek").innerHTML += `<option value="${s}">${s}</option>`);
+
+    function switchTab(tabName, btn) {
+      document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      document.getElementById("tab-prioritas").classList.toggle("hidden", tabName !== "prioritas");
+      document.getElementById("tab-simulasi").classList.toggle("hidden", tabName !== "simulasi");
+      if (tabName === "simulasi") runSimulation();
+    }
+
+    function getFiltered() {
+      const fk = document.getElementById("f-kab").value;
+      const fs = document.getElementById("f-sek").value;
+      const ft = document.getElementById("f-tier").value;
+      const q = document.getElementById("f-search").value.trim().toLowerCase();
+      return UMKM_RECORDS.filter(r =>
+        (fk === "ALL" || r.kab === fk) &&
+        (fs === "ALL" || r.sek === fs) &&
+        (ft === "ALL" || r.pred === ft) &&
+        (!q || r.id.toLowerCase().includes(q))
+      );
+    }
+
+    function renderDashboard() {
+      const rows = getFiltered();
+      document.getElementById("kpi-total").innerText = rows.length.toLocaleString("id-ID");
+      document.getElementById("kpi-t1").innerText = rows.filter(r => r.pred === "Menurun").length.toLocaleString("id-ID");
+      document.getElementById("kpi-t2").innerText = rows.filter(r => r.pred === "Stabil").length.toLocaleString("id-ID");
+      document.getElementById("kpi-t3").innerText = rows.filter(r => r.pred === "Tumbuh").length.toLocaleString("id-ID");
+      document.getElementById("table-count").innerText = `Menampilkan ${Math.min(rows.length, 150)} dari ${rows.length} UMKM`;
+
+      // Regional breakdown (always compute across current sector/tier filter or all for selected kab)
+      const fs = document.getElementById("f-sek").value;
+      const baseWil = UMKM_RECORDS.filter(r => fs === "ALL" || r.sek === fs);
+      const mapWil = {};
+      baseWil.forEach(r => {
+        if (!mapWil[r.kab]) mapWil[r.kab] = { n: 0, m: 0, s: 0, t: 0, tunai: 0 };
+        mapWil[r.kab].n++;
+        if (r.pred === "Menurun") mapWil[r.kab].m++;
+        else if (r.pred === "Stabil") mapWil[r.kab].s++;
+        else mapWil[r.kab].t++;
+        if (r.pay === "Tunai saja") mapWil[r.kab].tunai++;
+      });
+
+      const sortedWil = Object.entries(mapWil).sort((a, b) => (b[1].m / b[1].n) - (a[1].m / a[1].n));
+      const wEl = document.getElementById("wilayah-container");
+      wEl.innerHTML = sortedWil.map(([kab, st]) => {
+        const pm = (st.m / st.n * 100).toFixed(1);
+        const ps = (st.s / st.n * 100).toFixed(1);
+        const pt = (st.t / st.n * 100).toFixed(1);
+        return `
+          <div class="wilayah-row">
+            <div class="wilayah-top">
+              <span>${kab} (${st.n} UMKM)</span>
+              <span style="color:var(--red);">${pm}% Butuh Penyelamatan</span>
+            </div>
+            <div class="stacked-bar">
+              <div class="sb-m" style="width:${pm}%"></div>
+              <div class="sb-s" style="width:${ps}%"></div>
+              <div class="sb-t" style="width:${pt}%"></div>
+            </div>
+            <div class="wilayah-meta">
+              <span>Tumbuh: ${pt}% | Stabil: ${ps}%</span>
+              <span>Tunai Saja: ${st.tunai} UMKM</span>
+            </div>
+          </div>`;
+      }).join("");
+
+      // Sort priority: Menurun first, then Stabil, then Tumbuh
+      const orderP = { "Menurun": 0, "Stabil": 1, "Tumbuh": 2 };
+      const sortedRows = [...rows].sort((a, b) => orderP[a.pred] - orderP[b.pred]).slice(0, 150);
+      const tbody = document.getElementById("umkm-tbody");
+      tbody.innerHTML = sortedRows.map(r => {
+        const bCls = r.pred === "Menurun" ? "b-menurun" : (r.pred === "Stabil" ? "b-stabil" : "b-tumbuh");
+        return `
+          <tr>
+            <td><strong>${r.id}</strong></td>
+            <td><strong>${r.kab}</strong><br><span style="color:var(--slate);font-size:11px;">${r.sek}</span></td>
+            <td>Lit: <strong>${r.lit ?? "-"}</strong> | ${r.pay}<br><span style="color:var(--slate);font-size:11px;">Net: ${r.inet} | Rat: ${r.rat ?? "-"}</span></td>
+            <td><span class="badge ${bCls}">${r.pred}</span><br><span style="font-size:10.5px;color:var(--slate);">${r.tier.split(":")[0]}</span></td>
+            <td><span class="action-tag">${r.aksi}</span></td>
+          </tr>`;
+      }).join("");
+    }
+
+    function exportFilteredCSV() {
+      const rows = getFiltered();
+      const header = "ID,Kabupaten_Kota,Sektor_Usaha,Prediksi_Status,Tier_Prioritas,Rekomendasi_Aksi\n";
+      const csv = header + rows.map(r => `${r.id},"${r.kab}","${r.sek}",${r.pred},"${r.tier}","${r.aksi}"`).join("\n");
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url; a.download = "Target_Pendampingan_UMKM_Lampung.csv"; a.click();
+    }
+
+    function predictProbs(featObj) {
+      const vec = [
+        featObj.lit, featObj.inet, featObj.pay, featObj.pel,
+        1.0, featObj.plat, featObj.post, featObj.rat,
+        Math.log1p(featObj.ulasan), Math.log1p(featObj.omz), Math.log1p(featObj.mod),
+        Math.log1p(350), Math.log1p(10), Math.log1p(36), 1.0, 2.0, 35.0
+      ];
+      const logits = [0, 0, 0];
+      for (let c = 0; c < 3; c++) {
+        let s = MODEL_CONFIG.intercept[c];
+        for (let j = 0; j < vec.length; j++) {
+          const z = (vec[j] - MODEL_CONFIG.means[j]) / MODEL_CONFIG.stds[j];
+          s += z * MODEL_CONFIG.coefs[c][j];
+        }
+        logits[c] = s;
+      }
+      const mx = Math.max(...logits);
+      const exps = logits.map(v => Math.exp(v - mx));
+      const sumE = exps.reduce((a, b) => a + b, 0);
+      const probs = exps.map(e => e / sumE);
+      const scores = probs.map((p, idx) => p * MODEL_CONFIG.multipliers[idx]);
+      const clsIdx = scores.indexOf(Math.max(...scores));
+      return { probs, clsIdx };
+    }
+
+    function runSimulation() {
+      const lit = Number(document.getElementById("s-lit").value);
+      const inet = Number(document.getElementById("s-inet").value);
+      const pay = Number(document.getElementById("s-pay").value);
+      const pel = Number(document.getElementById("s-pel").value);
+      const plat = Number(document.getElementById("s-plat").value);
+      const post = Number(document.getElementById("s-post").value);
+      const rat = Number(document.getElementById("s-rat").value);
+      const ulasan = Number(document.getElementById("s-ulasan").value);
+      const mod = Number(document.getElementById("s-mod").value);
+      const omz = Number(document.getElementById("s-omz").value);
+
+      document.getElementById("lbl-lit").innerText = lit;
+      document.getElementById("lbl-plat").innerText = plat;
+      document.getElementById("lbl-post").innerText = post;
+      document.getElementById("lbl-rat").innerText = rat.toFixed(1);
+
+      const base = { lit, inet, pay, pel, plat, post, rat, ulasan, mod, omz };
+      const res = predictProbs(base);
+      const labels = ["MENURUN", "STABIL", "TUMBUH"];
+      const tiers = [
+        "Tier 1 - Penyelamatan Cepat (Prioritas Utama)",
+        "Tier 2 - Akselerasi Naik Kelas",
+        "Tier 3 - Ekspansi Pasar & Kandidat Mentor"
+      ];
+      document.getElementById("sim-pred").innerText = "Prediksi Status: " + labels[res.clsIdx];
+      document.getElementById("sim-tier").innerText = tiers[res.clsIdx];
+
+      const pM = (res.probs[0]*100).toFixed(1), pS = (res.probs[1]*100).toFixed(1), pT = (res.probs[2]*100).toFixed(1);
+      document.getElementById("bar-m").style.width = pM + "%"; document.getElementById("pct-m").innerText = pM + "%";
+      document.getElementById("bar-s").style.width = pS + "%"; document.getElementById("pct-s").innerText = pS + "%";
+      document.getElementById("bar-t").style.width = pT + "%"; document.getElementById("pct-t").innerText = pT + "%";
+
+      const gaps = [];
+      if (pay === 0) gaps.push("Onboarding QRIS");
+      if (lit < 50) gaps.push("Pelatihan Literasi Digital");
+      if (post < 5) gaps.push("Jadwal Konten >=5x/minggu");
+      if (rat < 4.3) gaps.push("Optimasi Rating & Ulasan");
+      document.getElementById("sim-aksi").innerText = "Aksi Disarankan: " + (gaps.length ? gaps.join(" + ") : "Pertahankan & Kurasi E-Katalog");
+
+      // What-if simulation
+      const simObj = { ...base };
+      if (document.getElementById("w-pel").checked) {
+        simObj.pel = 1;
+        simObj.lit = Math.min(100, simObj.lit + 18);
+      }
+      if (document.getElementById("w-qris").checked) {
+        simObj.pay = Math.min(2, Math.max(1, simObj.pay + 1));
+        simObj.plat = Math.min(5, simObj.plat + 1);
+      }
+      if (document.getElementById("w-inet").checked) {
+        simObj.inet = Math.min(2, simObj.inet + 1);
+        simObj.post = Math.min(15, simObj.post + 3);
+      }
+      const resAfter = predictProbs(simObj);
+      const deltaT = ((resAfter.probs[2] - res.probs[2]) * 100).toFixed(1);
+      const deltaM = ((resAfter.probs[0] - res.probs[0]) * 100).toFixed(1);
+      document.getElementById("whatif-out").innerHTML =
+        `Setelah intervensi terpilih: Status diproyeksikan menjadi <strong>${labels[resAfter.clsIdx]}</strong>. ` +
+        `Peluang <strong>Tumbuh</strong> berubah <strong style="color:var(--teal)">${deltaT >= 0 ? "+" : ""}${deltaT}%</strong> ` +
+        `(${(res.probs[2]*100).toFixed(1)}% -> ${(resAfter.probs[2]*100).toFixed(1)}%), risiko <strong>Menurun</strong> ` +
+        `<strong style="color:var(--indigo)">${deltaM}%</strong>.`;
+    }
+
+    renderDashboard();
+  </script>
+</body>
+</html>

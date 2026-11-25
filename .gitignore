@@ -1,0 +1,9 @@
+artifacts_output/
+charts/
+charts_ppt/
+referensi ppt/
+Technical Meeting GEMATIK VI Data Science.pptx
+Data Science (3).pdf
+drive-download-20261125T072048Z-1-001.zip
+*.tmp
+__pycache__/

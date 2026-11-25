@@ -1,0 +1,7 @@
+{
+  "cleanUrls": true,
+  "rewrites": [
+    { "source": "/", "destination": "/web_implementasi_situmbuh/index.html" },
+    { "source": "/app_data.js", "destination": "/web_implementasi_situmbuh/app_data.js" }
+  ]
+}
